@@ -9,6 +9,7 @@ The repository contains the following files.
  * U-net-dec2nd-1.ipynb : The main notebook, which includes the main result of the course project.
  * data_utils.py: Code for data preprocessing.
  * visualization.py: Code for visualization of the result.
+ * LSTM-jan2nd.ipynb: The notebook in which the ConvLSTM was implemented.
  
 
 It was contributed by Federico, Chao and Zhijie.
