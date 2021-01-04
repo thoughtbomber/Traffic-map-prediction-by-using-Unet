@@ -59,8 +59,8 @@ class RGBMapPlotter:
             axs[1, 1].set_title('SW Heading',fontsize=20)
             axs[1, 1].axis('off')
             plt.axis('off')
-            plt_path = self.type_of_data + '/%d.png'%j
-            plt.savefig(plt_path, dpi=300, bbox_inches='tight')
+#            plt_path = self.type_of_data + '/%d.png'%j
+            plt.savefig('%d.png'%j, dpi=300, bbox_inches='tight')
 
 #             map_data,head = map_to_RGB(data_slice,128,128)
 #             plt.figure(figsize = (20,10))
