@@ -1,4 +1,3 @@
-
 #=============================================================================
 import numpy as np
 import pandas as pd
@@ -115,6 +114,32 @@ class train_generator():
                 if j >= (self._train_set.shape[0] - self.training_size - self.batch_size):  
                     print("All training data has been used")
                     break
+    def get_train_new_LSTM(self):       
+        data_for_train = torch.zeros(self.batch_size, (self.training_size -3),8, self._height, self._width)
+        data_for_pred = torch.zeros(self.batch_size, 3,8, self._height, self._width)
+        i = 0
+        j = 0
+        m = 0
+        while True: 
+            temp1 = self._train_set[j:(j + self.training_size-3), :,:,:] # Get part of the image for coding
+            temp1=temp1.permute(0,3,1,2)
+            data_for_train[i,:,:,:,:] = temp1
+            temp2 = self._train_set[(j + self.training_size -3):(j + self.training_size),:,:,:]
+            temp2 = temp2.permute(0,3,1,2)
+            data_for_pred[i,:,:,:,:] = temp2
+            i += 1  
+            j = 50 + j
+            if i >= self.batch_size: # if i reaches the batch size, yield the dataset
+                print("This is the {}th batch in training".format(m+1))
+                yield [data_for_train, data_for_pred]
+                i = 0
+                m += 1
+                j = m
+                # If the remaining data cannot fill the 'data_for_train', we would not like to proceed again
+                # Just break and stop the loop
+                if j >= (self._train_set.shape[0] - self.training_size - self.batch_size):  
+                    print("All training data has been used")
+                    break
                     
                     
 class valid_generator():
@@ -174,6 +199,34 @@ class valid_generator():
             temp2 = self._vali_set[(j + self._vali_size -3):(j + self._vali_size),:,:,:]
             temp2 = temp2.reshape(1, 3*8, self._height, self._width)
             data_for_pred[i,:,:,:] = temp2
+            i += 1  
+            j += 20
+            if i >= self.batch_size: # if i reaches the batch size, yield the dataset
+                print("This is the {}th batch in validation".format(m+1))
+                yield [data_for_input, data_for_pred]
+                i = 0
+                m += 1
+                j = m
+                # If the remaining data cannot fill the 'data_for_validation', we would not like to proceed again
+                # Just break and stop the loop
+                if j >= (self._vali_set.shape[0] - self._vali_size - self.batch_size):  
+                    print("All validation data has been used")
+                    m = 0 # Reuse the data
+                break
+    def gen_valid_LSTM(self):
+        data_for_input = torch.zeros(self.batch_size, (self._vali_size -1),8, self._height, self._width)
+        data_for_pred = torch.zeros(self.batch_size, 1,8, self._height, self._width)
+        i = 0
+        j = 0
+        m = 0
+        while True: 
+            temp1 = self._vali_set[j:(j + self._vali_size-1), :,:,:] # Get part of the image for coding
+            temp1 = temp1.permute(0,3,1,2)
+            
+            data_for_input[i,:,:,:,:] = temp1
+            temp2 = self._vali_set[(j + self._vali_size -1):(j + self._vali_size),:,:,:]
+            temp2 = temp2.permute(0,3,1,2)
+            data_for_pred[i,:,:,:,:] = temp2
             i += 1  
             j += 20
             if i >= self.batch_size: # if i reaches the batch size, yield the dataset
@@ -253,4 +306,3 @@ class test_generator():
                 plt.axis('off')
                 plt_path2 = 'pic_truth/truth%d.png'%i
                 plt.savefig(plt_path2, dpi=300, bbox_inches='tight')
-
